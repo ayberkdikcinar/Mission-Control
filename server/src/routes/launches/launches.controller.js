@@ -6,7 +6,7 @@ async function launchNewMission(req, res) {
         if (!launch.target || !launch.rocket || !launch.mission) {
             return res.status(400).json({ error: "Missin arguments" });
         }
-        const response = await launches.addNewLaunch(launch);
+        const response = await launches.scheduleNewLaunch(launch);
         console.log(response);
         if (!response.error)
             return res.status(201).json(launch);

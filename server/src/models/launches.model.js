@@ -1,35 +1,105 @@
 const launchesModel = require('./launches.mongo');
 const planetModel = require('./planets.mongo');
+const axios = require('axios');
 
 const DEFAULT_FLIGHT_NUMBER = 100;
+const BASE_URL_LAUNCHES_SPACEX = 'https://api.spacexdata.com/v4/launches/';
 
+async function loadLaunchesData() {
+    const response = await getOneLaunch({
+        flightNumber: 1,
+        rocket: 'Falcon 1',
+        mission: 'FalconSat'
+    });
+
+    if (!response) {
+        await getLaunchesFromSpaceXAPI();
+    }
+
+
+}
+
+async function getLaunchesFromSpaceXAPI() {
+    const bodyQuery = {
+        query: {},
+        options: {
+            pagination: false,
+            populate: [
+                {
+                    path: 'rocket',
+                    select: {
+                        name: 1
+                    }
+                },
+                {
+                    path: 'payloads',
+                    select: {
+                        customers: 1
+                    }
+                },
+
+            ]
+        },
+
+    };
+    const response = await axios.post(`${BASE_URL_LAUNCHES_SPACEX}query`, bodyQuery);
+    const launchDocs = response.data.docs;
+
+    for (const launchDoc of launchDocs) {
+
+        const payloads = launchDoc['payloads'];
+        const customers = payloads.flatMap((payload) => {
+            return payload['customers'];
+        });
+
+        const launch = {
+            flightNumber: launchDoc.flight_number,
+            mission: launchDoc.name,
+            rocket: launchDoc['rocket'].name,
+            success: launchDoc.success,
+            upcoming: launchDoc.upcoming,
+            customers: customers,
+            launchDate: launchDoc.date_local
+
+        }
+        await addNewLaunch(launch);
+    }
+
+}
 async function getAllLaunches() {
     return await launchesModel.find({}, { '__v': 0, '_id': 0 });
 
 }
+async function getOneLaunch(filter) {
+    return await launchesModel.findOne(filter, { '__v': 0, '_id': 0 });
+}
 async function addNewLaunch(launch) {
     try {
-        const checkPlanetExistance = await planetModel.findOne({ keplerName: launch.target });
-        if (checkPlanetExistance) {
-            Object.assign(launch, {
-                flightNumber: (await getLatestFlightNumber()) + 1,
-                upcoming: true,
-                success: true,
-                customers: ['A', 'B'],
-            });
-            return await launchesModel.findOneAndUpdate(
-                { flightNumber: launch.flightNumber },
-                launch,
-                { upsert: true, new: true });
-        }
-        else {
-            return { "error": "Planet does not exist" }
-        }
+
+        return await launchesModel.findOneAndUpdate(
+            {
+                flightNumber: launch.flightNumber
+            },
+            launch,
+            { upsert: true, new: true });
+
     } catch (error) {
         return error;
     }
 
     //throw new Error('Planet does not exist.');
+}
+async function scheduleNewLaunch(launch) {
+    const checkPlanetExistance = await getOneLaunch({ keplerName: launch.target });
+    if (checkPlanetExistance) {
+        Object.assign(launch, {
+            flightNumber: (await getLatestFlightNumber()) + 1,
+            upcoming: true,
+            success: true,
+            customers: ['A', 'B'],
+        });
+        return await addNewLaunch(launch);
+    }
 }
 
 async function deleteLaunch(id) {
@@ -56,6 +126,7 @@ async function getLatestFlightNumber() {
 
 module.exports = {
     getAllLaunches,
-    addNewLaunch,
-    deleteLaunch
+    scheduleNewLaunch,
+    deleteLaunch,
+    loadLaunchesData
 }

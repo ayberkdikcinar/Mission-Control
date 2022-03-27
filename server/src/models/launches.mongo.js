@@ -19,7 +19,6 @@ const launchSchema = new Schema({
     customers: [String],
     target: {
         type: String,
-        required: true,
     },
     launchDate: {
         type: Date,
