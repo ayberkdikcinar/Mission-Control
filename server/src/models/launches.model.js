@@ -59,7 +59,8 @@ async function getLaunchesFromSpaceXAPI() {
             success: launchDoc.success,
             upcoming: launchDoc.upcoming,
             customers: customers,
-            launchDate: launchDoc.date_local
+            launchDate: launchDoc.date_local,
+            target: 'test'
 
         }
         await addNewLaunch(launch);
@@ -88,20 +89,16 @@ async function addNewLaunch(launch) {
     } catch (error) {
         return error;
     }
-
-    //throw new Error('Planet does not exist.');
 }
 async function scheduleNewLaunch(launch) {
-    const checkPlanetExistance = await getOneLaunch({ keplerName: launch.target });
-    if (checkPlanetExistance) {
-        Object.assign(launch, {
-            flightNumber: (await getLatestFlightNumber()) + 1,
-            upcoming: true,
-            success: true,
-            customers: ['A', 'B'],
-        });
-        return await addNewLaunch(launch);
-    }
+    Object.assign(launch, {
+        flightNumber: (await getLatestFlightNumber()) + 1,
+        upcoming: true,
+        success: true,
+        customers: ['A', 'B'],
+    });
+    return await addNewLaunch(launch);
+
 }
 
 async function deleteLaunch(id) {

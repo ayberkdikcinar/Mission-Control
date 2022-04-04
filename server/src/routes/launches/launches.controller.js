@@ -1,20 +1,25 @@
 const launches = require('../../models/launches.model.js');
 const { arrangePaginationValues } = require('../../services/query')
+
 async function launchNewMission(req, res) {
-    try {
-        const launch = req.body;
-        if (!launch.target || !launch.rocket || !launch.mission) {
-            return res.status(400).json({ error: "Missin arguments" });
-        }
-        const response = await launches.scheduleNewLaunch(launch);
-        console.log(response);
-        if (!response.error)
-            return res.status(201).json(launch);
-        return res.status(404).json(response);
-    } catch (error) {
-        return res.status(500).json({ "error": error.message });
+
+    const launch = req.body;
+    console.log(req.body);
+    if (!launch.mission || !launch.rocket || !launch.launchDate
+        || !launch.target) {
+        return res.status(400).json({
+            error: 'Missing required launch property',
+        });
     }
 
+    launch.launchDate = new Date(launch.launchDate);
+    if (isNaN(launch.launchDate)) {
+        return res.status(400).json({
+            error: 'Invalid launch date',
+        });
+    }
+    await launches.scheduleNewLaunch(launch);
+    return res.status(201).json(launch);
 
 }
 async function getAllLaunches(req, res) {

@@ -3,9 +3,10 @@ const cors = require('cors');
 const path = require('path');
 const morgan = require('morgan');
 const { apiV1Router } = require('./routes/api_v1')
-
+const bodyParser = require('body-parser')
 const app = express();
 app.use(cors({ origin: 'http://localhost:3000' }));
+app.use(bodyParser.json())
 app.use(morgan("combined"));
 app.use('/v1', apiV1Router);
 app.use(express.json());
