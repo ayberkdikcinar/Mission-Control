@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
-const dbURI = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.5r0s1.mongodb.net/nasaDB?retryWrites=true&w=majority`;
+
+const MONGO_URL = process.env.MONGO_URL;
 
 mongoose.connection.once('open', () => {
     console.debug('DB Connection opened.');
@@ -11,7 +12,7 @@ mongoose.connection.on('error', (err) => {
 
 async function mongoConnect() {
     try {
-        await mongoose.connect(dbURI, {
+        await mongoose.connect(MONGO_URL, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });
