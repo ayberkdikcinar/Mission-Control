@@ -16,15 +16,11 @@ async function mongoConnect() {
             useUnifiedTopology: true,
         });
     } catch (error) {
-        handleError(error);
+        console.log(error);
     }
 }
 async function mongoDisconnect() {
-    try {
-        await mongoose.disconnect();
-    } catch (error) {
-        handleError(error);
-    }
+    await mongoose.disconnect();
 }
 
 module.exports = {
