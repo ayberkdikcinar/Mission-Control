@@ -19,5 +19,15 @@ async function mongoConnect() {
         handleError(error);
     }
 }
+async function mongoDisconnect() {
+    try {
+        await mongoose.disconnect();
+    } catch (error) {
+        handleError(error);
+    }
+}
 
-module.exports = mongoConnect;
+module.exports = {
+    mongoConnect,
+    mongoDisconnect
+}
