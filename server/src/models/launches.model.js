@@ -66,9 +66,11 @@ async function getLaunchesFromSpaceXAPI() {
     }
 
 }
-async function getAllLaunches() {
-    return await launchesModel.find({}, { '__v': 0, '_id': 0 });
-
+async function getAllLaunches(skip, limit) {
+    return await launchesModel.find({}, { '__v': 0, '_id': 0 })
+        .skip(skip)
+        .limit(limit)
+        .sort({ flightNumber: 1 });
 }
 async function getOneLaunch(filter) {
     return await launchesModel.findOne(filter, { '__v': 0, '_id': 0 });

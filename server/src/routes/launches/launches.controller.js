@@ -1,5 +1,5 @@
 const launches = require('../../models/launches.model.js');
-
+const { arrangePaginationValues } = require('../../services/query')
 async function launchNewMission(req, res) {
     try {
         const launch = req.body;
@@ -18,7 +18,8 @@ async function launchNewMission(req, res) {
 
 }
 async function getAllLaunches(req, res) {
-    return res.status(200).json(await launches.getAllLaunches());
+    const { skip, limit } = arrangePaginationValues(req.query);
+    return res.status(200).json(await launches.getAllLaunches(skip, limit));
 }
 
 async function deleteLaunch(req, res) {
