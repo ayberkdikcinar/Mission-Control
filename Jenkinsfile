@@ -23,7 +23,7 @@ pipeline{
             steps{
                 echo 'testing...'
                 sh 'npm run test'
-                echo 'test step is done'
+                echo 'test step  is done'
             }
         }
     }
