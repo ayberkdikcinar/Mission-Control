@@ -1,16 +1,20 @@
 pipeline{
     agent any
-    
+    tools {nodejs "nodejs"}
+    environment { 
+        MONGO_URL = 'mongodb://localhost/nasa'
+    }
     stages{
-        stage('build'){
-            environment { 
-                MONGO_URL = 'mongodb://localhost/nasa'
+        stage('install'){
+            steps{
+                echo 'Installing npm packages...'
+                sh 'npm install'
+                 echo 'install step is done'
             }
+        }
+        stage('build'){ 
             steps{
                 echo 'Building...'
-                echo 'Installing npm packages'
-                sh 'npm install'
-                echo 'running client'
                 sh 'npm run build --prefix client'
                 echo 'build step is done'
             }
