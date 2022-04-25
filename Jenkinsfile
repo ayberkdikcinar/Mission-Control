@@ -1,6 +1,9 @@
 pipeline{
-    agent any
-    tools {nodejs "nodejs"}
+    agent {
+        docker {
+            image 'node:lts-buster-slim'
+        }
+    } 
     environment { 
         MONGO_URL = 'mongodb://localhost/nasa'
     }
