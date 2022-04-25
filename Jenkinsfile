@@ -15,6 +15,7 @@ pipeline{
         stage('build'){ 
             steps{
                 echo 'Building...'
+                sh 'npm update && npm audit fix --force'
                 sh 'npm run build --prefix client'
                 echo 'build step is done'
             }
@@ -23,7 +24,7 @@ pipeline{
             steps{
                 echo 'testing...'
                 sh 'npm run test'
-                echo 'test step  is done'
+                echo 'test step is done'
             }
         }
     }
