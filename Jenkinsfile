@@ -1,7 +1,7 @@
 pipeline{
     agent any
     tools {
-       nodejs "nodejs"
+        nodejs "nodejs"
     }  
     environment { 
         MONGO_URL = "${env.MONGO_URL}"
@@ -11,7 +11,7 @@ pipeline{
             steps{
                 echo 'Installing npm packages...'
                 sh 'npm install'
-                 echo 'install step is done'
+                echo 'install step is done'
             }
         }
         stage('build'){ 
