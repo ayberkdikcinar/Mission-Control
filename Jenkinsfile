@@ -1,11 +1,10 @@
 pipeline{
-    agent {
-        docker {
-            image 'node:lts-buster-slim'
-        }
-    } 
+    agent any
+    tools {
+       nodejs "nodejs"
+    }  
     environment { 
-        MONGO_URL = 'mongodb://localhost/nasa'
+        MONGO_URL = "${env.MONGO_URL}"
     }
     stages{
         stage('install'){
@@ -18,7 +17,7 @@ pipeline{
         stage('build'){ 
             steps{
                 echo 'Building...'
-                sh 'npm update && npm audit fix --force'
+                sh 'npm audit fix --force'
                 sh 'npm run build --prefix client'
                 echo 'build step is done'
             }
