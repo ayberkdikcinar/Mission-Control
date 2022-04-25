@@ -11,7 +11,7 @@ pipeline{
             steps{
                 echo 'Installing npm packages...'
                 sh 'npm install'
-                echo 'install step is done.'
+                echo 'install step is done...'
             }
         }
         stage('build'){ 
@@ -19,14 +19,14 @@ pipeline{
                 echo 'Building stage...'
                 sh 'npm audit fix --force'
                 sh 'npm run build --prefix client'
-                echo 'build step is done.'
+                echo 'build step is done...'
             }
         }
         stage('test'){
             steps{
                 echo 'Testing stage...'
                 sh 'npm run test'
-                echo 'test step is done.'
+                echo 'test step is done...'
             }
         }
     }
